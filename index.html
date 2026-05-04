@@ -1,217 +1,216 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Kasir Beras Pro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kasir Beras PRO</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    body { margin:0; font-family: Arial; background:#b04a56; color:#fff; }
-    .container { display:flex; height:100vh; }
-
-    /* SIDEBAR */
-    .sidebar {
-      width:250px; padding:15px; background:#a2444f;
-      border-right:3px solid #fff;
-    }
-    .menu-btn {
-      display:block; margin:10px 0; padding:10px;
-      background:#c25a66; border:2px solid #fff; cursor:pointer;
-      text-align:center; font-weight:bold;
-    }
-
-    /* MAIN */
-    .main { flex:1; padding:15px; }
-
-    .top {
-      display:flex; gap:10px; margin-bottom:10px;
-    }
-
-    input, select {
-      padding:8px; width:100%;
-    }
-
-    table {
-      width:100%; border-collapse:collapse; background:#fff; color:#000;
-    }
-    th, td { border:1px solid #000; padding:5px; }
-
-    .btn {
-      background:#333; color:#fff; padding:10px; cursor:pointer;
-    }
-
-    .dashboard {
-      display:flex; gap:10px; margin-top:10px;
-    }
-
-    .card {
-      background:#2e6fa3; padding:10px; border-radius:8px;
-      width:150px; text-align:center;
-    }
-
-    /* MODAL */
-    .modal {
-      display:none; position:fixed; top:50%; left:50%;
-      transform:translate(-50%,-50%);
-      background:#b04a56; padding:20px; border:2px solid #fff;
-      width:600px;
-    }
-
-    .close { float:right; cursor:pointer; }
-
-  </style>
+<style>
+body{margin:0;font-family:Arial;background:#a94d55;color:white;}
+.container{display:flex;height:100vh;}
+.sidebar{width:250px;background:#933d45;padding:10px;}
+.menu{background:#c25a66;padding:10px;margin:6px 0;text-align:center;border:2px solid white;cursor:pointer;}
+.main{flex:1;padding:10px;}
+input,select{width:100%;padding:8px;margin:5px 0;}
+table{width:100%;background:white;color:black;border-collapse:collapse;}
+td,th{border:1px solid black;padding:5px;}
+.btn{background:#333;color:white;padding:10px;margin-top:5px;cursor:pointer;}
+.modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+background:#a94d55;padding:20px;border:2px solid white;width:600px;}
+.card{background:#2e6fa3;padding:10px;margin:5px;border-radius:8px;text-align:center;}
+.flex{display:flex;}
+</style>
 </head>
+
 <body>
 
 <div class="container">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="menu-btn" onclick="openModal('stok')">INPUT STOK</div>
-    <div class="menu-btn" onclick="openModal('member')">DATA MEMBER</div>
-    <div class="menu-btn" onclick="openModal('bon')">DATA BON</div>
-    <div class="menu-btn" onclick="openModal('rekap')">REKAP HARIAN</div>
-    <div class="menu-btn" onclick="openModal('transaksi')">TRANSAKSI HARIAN</div>
+<!-- SIDEBAR -->
+<div class="sidebar">
+<div class="menu" onclick="openModal('stok')">INPUT STOK</div>
+<div class="menu" onclick="openModal('member')">DATA MEMBER</div>
+<div class="menu" onclick="openModal('bon')">DATA BON</div>
+<div class="menu" onclick="openModal('rekap')">REKAP HARIAN</div>
 
-    <div class="dashboard">
-      <div class="card">Cash<br>Rp <span id="cash">0</span></div>
-      <div class="card">Bon<br>Rp <span id="bonTotal">0</span></div>
-      <div class="card">Lunas<br>Rp <span id="lunas">0</span></div>
-    </div>
-  </div>
-
-  <!-- MAIN -->
-  <div class="main">
-
-    <div class="top">
-      <input id="nama" placeholder="Nama Pembeli">
-      <select id="jenis">
-        <option value="5">5 Kg</option>
-        <option value="10">10 Kg</option>
-        <option value="15">15 Kg</option>
-        <option value="30">30 Kg</option>
-      </select>
-      <input id="karung" type="number" value="1">
-      <input id="beli" type="number" placeholder="Harga Beli">
-      <input id="jual" type="number" placeholder="Harga Jual">
-      <select id="status">
-        <option>Cash</option>
-        <option>Bon</option>
-      </select>
-      <button class="btn" onclick="tambah()">Tambah</button>
-    </div>
-
-    <table id="tabel">
-      <thead>
-        <tr>
-          <th>Nama</th>
-          <th>Jenis</th>
-          <th>Karung</th>
-          <th>Total</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <h3>Total Belanja: Rp <span id="total">0</span></h3>
-    <button class="btn" onclick="kirim()">PROSES TRANSAKSI</button>
-
-    <canvas id="chart"></canvas>
-
-  </div>
+<div class="flex">
+<div class="card">Cash<br>Rp <span id="cash">0</span></div>
+<div class="card">Bon<br>Rp <span id="bon">0</span></div>
+</div>
 </div>
 
-<!-- MODALS -->
+<!-- MAIN -->
+<div class="main">
+
+<input id="nama" placeholder="Nama Pembeli">
+
+<select id="barang"></select>
+
+<input id="karung" type="number" value="1">
+
+<select id="status">
+<option>Cash</option>
+<option>Bon</option>
+</select>
+
+<button class="btn" onclick="tambah()">Tambah</button>
+
+<table id="tabel">
+<tr>
+<th>Barang</th>
+<th>Harga</th>
+<th>Qty</th>
+<th>Total</th>
+</tr>
+</table>
+
+<h3>Total: Rp <span id="total">0</span></h3>
+
+<button class="btn" onclick="proses()">PROSES</button>
+<button class="btn" onclick="printStruk()">PRINT STRUK</button>
+
+<canvas id="chart"></canvas>
+
+</div>
+</div>
+
+<!-- MODAL STOK -->
 <div id="stok" class="modal">
-  <span class="close" onclick="closeModal('stok')">X</span>
-  <h3>INPUT STOK</h3>
-  <input placeholder="Nama Barang">
-  <input placeholder="Harga Beli">
-  <input placeholder="Harga Jual">
+<h3>INPUT STOK</h3>
+<input id="namaBarang" placeholder="Nama Barang">
+<input id="hargaBarang" placeholder="Harga">
+<button class="btn" onclick="tambahStok()">Simpan</button>
+<button class="btn" onclick="closeModal('stok')">Tutup</button>
 </div>
 
+<!-- MODAL MEMBER -->
+<div id="member" class="modal">
+<h3>DATA MEMBER</h3>
+<input id="namaMember" placeholder="Nama Member">
+<button class="btn" onclick="tambahMember()">Tambah</button>
+</div>
+
+<!-- MODAL BON -->
 <div id="bon" class="modal">
-  <span class="close" onclick="closeModal('bon')">X</span>
-  <h3>DATA BON</h3>
-  <table>
-    <tr><th>Nama</th><th>Total Bon</th></tr>
-  </table>
+<h3>DATA BON</h3>
+<div id="listBon"></div>
 </div>
 
+<!-- MODAL REKAP -->
 <div id="rekap" class="modal">
-  <span class="close" onclick="closeModal('rekap')">X</span>
-  <h3>REKAP HARIAN</h3>
+<h3>REKAP HARIAN</h3>
+<div id="rekapData"></div>
 </div>
 
 <script>
 
-let total = 0;
-let cash = 0;
-let bon = 0;
+const URL="https://script.google.com/macros/s/AKfycbyc8k47luq0tY-gHq3PXwVLByDQ6MvtfNa1itMcC45UxCAtq4dmrLZ2hlWMeti5B-hf/exec";
 
-function tambah() {
-  let nama = document.getElementById("nama").value;
-  let kg = document.getElementById("jenis").value;
-  let karung = document.getElementById("karung").value;
-  let jual = document.getElementById("jual").value;
-  let status = document.getElementById("status").value;
+let stok=[];
+let member=[];
+let bonData={};
 
-  let totalHarga = karung * jual;
+let total=0,cash=0,bon=0;
 
-  let row = `<tr>
-    <td>${nama}</td>
-    <td>${kg} Kg</td>
-    <td>${karung}</td>
-    <td>${totalHarga}</td>
-    <td>${status}</td>
-  </tr>`;
-
-  document.querySelector("#tabel tbody").innerHTML += row;
-
-  total += totalHarga;
-
-  if(status == "Cash") cash += totalHarga;
-  else bon += totalHarga;
-
-  updateUI();
+function tambahStok(){
+let nama=document.getElementById("namaBarang").value;
+let harga=parseInt(document.getElementById("hargaBarang").value);
+stok.push({nama,harga});
+renderBarang();
+alert("Stok ditambah!");
 }
 
-function updateUI() {
-  document.getElementById("total").innerText = total;
-  document.getElementById("cash").innerText = cash;
-  document.getElementById("bonTotal").innerText = bon;
+function renderBarang(){
+let select=document.getElementById("barang");
+select.innerHTML="";
+stok.forEach((s,i)=>{
+select.innerHTML+=`<option value="${i}">${s.nama} - ${s.harga}</option>`;
+});
 }
 
-function kirim() {
-  fetch("URL_WEB_APP_KAMU", {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify({total, cash, bon})
-  });
+function tambah(){
+let i=document.getElementById("barang").value;
+let qty=parseInt(document.getElementById("karung").value);
+let status=document.getElementById("status").value;
+let item=stok[i];
 
-  alert("Transaksi disimpan!");
+let totalHarga=item.harga*qty;
+
+document.getElementById("tabel").innerHTML+=`
+<tr>
+<td>${item.nama}</td>
+<td>${item.harga}</td>
+<td>${qty}</td>
+<td>${totalHarga}</td>
+</tr>`;
+
+total+=totalHarga;
+
+if(status=="Cash") cash+=totalHarga;
+else{
+bon+=totalHarga;
+let nama=document.getElementById("nama").value;
+if(!bonData[nama]) bonData[nama]=0;
+bonData[nama]+=totalHarga;
 }
 
-function openModal(id) {
-  document.getElementById(id).style.display = "block";
+updateUI();
+updateChart();
 }
-function closeModal(id) {
-  document.getElementById(id).style.display = "none";
+
+function proses(){
+fetch(URL,{
+method:"POST",
+mode:"no-cors",
+body:JSON.stringify({total,cash,bon})
+});
+alert("Transaksi tersimpan!");
+}
+
+function tambahMember(){
+let nama=document.getElementById("namaMember").value;
+member.push(nama);
+alert("Member ditambah!");
+}
+
+function openModal(id){document.getElementById(id).style.display="block";}
+function closeModal(id){document.getElementById(id).style.display="none";}
+
+function updateUI(){
+document.getElementById("total").innerText=total;
+document.getElementById("cash").innerText=cash;
+document.getElementById("bon").innerText=bon;
+renderBon();
+renderRekap();
+}
+
+function renderBon(){
+let html="";
+for(let nama in bonData){
+html+=`${nama} : Rp ${bonData[nama]}<br>`;
+}
+document.getElementById("listBon").innerHTML=html;
+}
+
+function renderRekap(){
+document.getElementById("rekapData").innerHTML=
+`Total: ${total}<br>Cash: ${cash}<br>Bon: ${bon}`;
+}
+
+function printStruk(){
+window.print();
 }
 
 /* CHART */
-new Chart(document.getElementById("chart"), {
-  type: 'bar',
-  data: {
-    labels: ["Cash", "Bon"],
-    datasets: [{
-      data: [cash, bon]
-    }]
-  }
+let chart=new Chart(document.getElementById("chart"),{
+type:'bar',
+data:{labels:["Cash","Bon"],datasets:[{data:[cash,bon]}]}
 });
+
+function updateChart(){
+chart.data.datasets[0].data=[cash,bon];
+chart.update();
+}
 
 </script>
 
