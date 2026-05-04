@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kasir Beras</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+    }
+    button {
+      background: #28a745;
+      color: white;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Kasir Beras</h2>
+
+  <label>Nama Pembeli</label>
+  <input type="text" id="nama">
+
+  <label>Jenis Beras</label>
+  <select id="jenis">
+    <option value="5">5 Kg</option>
+    <option value="10">10 Kg</option>
+    <option value="15">15 Kg</option>
+    <option value="30">30 Kg</option>
+  </select>
+
+  <label>Jumlah Karung</label>
+  <input type="number" id="karung" value="1">
+
+  <label>Harga per Karung</label>
+  <input type="number" id="harga">
+
+  <label>Status</label>
+  <select id="status">
+    <option>Cash</option>
+    <option>Bon</option>
+  </select>
+
+  <h3 id="total">Total: Rp 0</h3>
+
+  <button onclick="hitung()">Hitung</button>
+  <button onclick="kirim()">Simpan</button>
+</div>
+
+<script>
+function hitung() {
+  let kg = document.getElementById("jenis").value;
+  let karung = document.getElementById("karung").value;
+  let harga = document.getElementById("harga").value;
+
+  let totalKg = kg * karung;
+  let totalHarga = harga * karung;
+
+  document.getElementById("total").innerText =
+    "Total: Rp " + totalHarga + " (" + totalKg + " Kg)";
+}
+
+function kirim() {
+  let data = {
+    nama: document.getElementById("nama").value,
+    jenis: document.getElementById("jenis").value,
+    karung: document.getElementById("karung").value,
+    harga: document.getElementById("harga").value,
+    status: document.getElementById("status").value
+  };
+
+  fetch("https://script.google.com/macros/s/AKfycbw4ib9tLx696I2iONzL6fd6F4CSZrDt8RvrTzqtvAuRuU18fEDQ2AwEjvg2eRLiCXU/exec", {
+    method: "POST",
+    body: JSON.stringify(data)
+  })
+  .then(res => res.text())
+  .then(res => alert("Data masuk!"));
+}
+</script>
+
+</body>
+</html>
