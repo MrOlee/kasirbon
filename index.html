@@ -1,215 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Kasir Beras Final</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kasir Beras PRO</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
-body{margin:0;font-family:Arial;background:#a94d55;color:white;}
-.container{display:flex;height:100vh;}
-.sidebar{width:250px;background:#933d45;padding:10px;}
-.menu{background:#c25a66;padding:10px;margin:6px 0;text-align:center;border:2px solid white;cursor:pointer;}
-.main{flex:1;padding:10px;}
-input,select{width:100%;padding:8px;margin:5px 0;}
-table{width:100%;background:white;color:black;border-collapse:collapse;}
-td,th{border:1px solid black;padding:5px;}
-.btn{background:#333;color:white;padding:10px;margin-top:5px;cursor:pointer;}
-.modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-background:#a94d55;padding:20px;border:2px solid white;width:600px;}
-.card{background:#2e6fa3;padding:10px;margin:5px;border-radius:8px;text-align:center;}
-.flex{display:flex;}
+body{font-family:Arial;background:#b04a56;color:white;padding:20px;}
+.box{background:#a94450;padding:20px;border-radius:10px;max-width:500px;margin:auto;}
+input,select,button{width:100%;padding:10px;margin:5px 0;}
+button{background:#222;color:white;cursor:pointer;}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-<div class="menu" onclick="openModal('stok')">INPUT STOK</div>
-<div class="menu" onclick="openModal('member')">DATA MEMBER</div>
-<div class="menu" onclick="openModal('bon')">DATA BON</div>
-<div class="menu" onclick="openModal('rekap')">REKAP HARIAN</div>
-
-<div class="flex">
-<div class="card">Cash<br>Rp <span id="cash">0</span></div>
-<div class="card">Bon<br>Rp <span id="bon">0</span></div>
-</div>
-</div>
-
-<!-- MAIN -->
-<div class="main">
+<div class="box">
+<h2>Kasir Beras</h2>
 
 <input id="nama" placeholder="Nama Pembeli">
 
-<select id="barang"></select>
+<select id="jenis">
+<option value="5">5 Kg</option>
+<option value="10">10 Kg</option>
+<option value="15">15 Kg</option>
+<option value="30">30 Kg</option>
+</select>
 
 <input id="karung" type="number" value="1">
 
+<input id="hargaBeli" type="number" placeholder="Harga Beli">
+<input id="hargaJual" type="number" placeholder="Harga Jual">
+
 <select id="status">
-<option>Cash</option>
-<option>Bon</option>
+<option>CASH</option>
+<option>BON</option>
 </select>
 
-<button class="btn" onclick="tambah()">Tambah</button>
+<h3 id="hasil">Total: Rp 0</h3>
 
-<table id="tabel">
-<tr>
-<th>Barang</th>
-<th>Harga</th>
-<th>Qty</th>
-<th>Total</th>
-</tr>
-</table>
+<button onclick="hitung()">Hitung</button>
+<button onclick="kirim()">Simpan</button>
 
-<h3>Total: Rp <span id="total">0</span></h3>
-
-<button class="btn" onclick="proses()">PROSES</button>
-<button class="btn" onclick="printStruk()">PRINT STRUK</button>
-
-<canvas id="chart"></canvas>
-
-</div>
-</div>
-
-<!-- MODAL STOK -->
-<div id="stok" class="modal">
-<h3>INPUT STOK</h3>
-<input id="namaBarang" placeholder="Nama Barang">
-<input id="hargaBarang" placeholder="Harga">
-<button class="btn" onclick="tambahStok()">Simpan</button>
-<button class="btn" onclick="closeModal('stok')">Tutup</button>
-</div>
-
-<!-- MODAL MEMBER -->
-<div id="member" class="modal">
-<h3>DATA MEMBER</h3>
-<input id="namaMember" placeholder="Nama Member">
-<button class="btn" onclick="tambahMember()">Tambah</button>
-</div>
-
-<!-- MODAL BON -->
-<div id="bon" class="modal">
-<h3>DATA BON</h3>
-<div id="listBon"></div>
-</div>
-
-<!-- MODAL REKAP -->
-<div id="rekap" class="modal">
-<h3>REKAP HARIAN</h3>
-<div id="rekapData"></div>
 </div>
 
 <script>
 
-const URL="https://script.google.com/macros/s/AKfycbyc8k47luq0tY-gHq3PXwVLByDQ6MvtfNa1itMcC45UxCAtq4dmrLZ2hlWMeti5B-hf/exec";
+const URL = "https://script.google.com/macros/s/AKfycbyc8k47luq0tY-gHq3PXwVLByDQ6MvtfNa1itMcC45UxCAtq4dmrLZ2hlWMeti5B-hf/exec";
 
-let stok=[];
-let member=[];
-let bonData={};
+function hitung(){
+let jenis = parseInt(document.getElementById("jenis").value);
+let karung = parseInt(document.getElementById("karung").value);
+let beli = parseInt(document.getElementById("hargaBeli").value);
+let jual = parseInt(document.getElementById("hargaJual").value);
 
-let total=0,cash=0,bon=0;
+let totalKg = jenis * karung;
+let totalJual = jual * karung;
+let untung = (jual - beli) * karung;
 
-function tambahStok(){
-let nama=document.getElementById("namaBarang").value;
-let harga=parseInt(document.getElementById("hargaBarang").value);
-stok.push({nama,harga});
-renderBarang();
-alert("Stok ditambah!");
+document.getElementById("hasil").innerText =
+"Total: Rp " + totalJual +
+" | Untung: Rp " + untung +
+" (" + totalKg + " Kg)";
 }
 
-function renderBarang(){
-let select=document.getElementById("barang");
-select.innerHTML="";
-stok.forEach((s,i)=>{
-select.innerHTML+=`<option value="${i}">${s.nama} - ${s.harga}</option>`;
-});
-}
+function kirim(){
 
-function tambah(){
-let i=document.getElementById("barang").value;
-let qty=parseInt(document.getElementById("karung").value);
-let status=document.getElementById("status").value;
-let item=stok[i];
+let data = {
+  nama: document.getElementById("nama").value,
+  jenis: document.getElementById("jenis").value,
+  karung: document.getElementById("karung").value,
+  hargaBeli: document.getElementById("hargaBeli").value,
+  hargaJual: document.getElementById("hargaJual").value,
+  status: document.getElementById("status").value
+};
 
-let totalHarga=item.harga*qty;
-
-document.getElementById("tabel").innerHTML+=`
-<tr>
-<td>${item.nama}</td>
-<td>${item.harga}</td>
-<td>${qty}</td>
-<td>${totalHarga}</td>
-</tr>`;
-
-total+=totalHarga;
-
-if(status=="Cash") cash+=totalHarga;
-else{
-bon+=totalHarga;
-let nama=document.getElementById("nama").value;
-if(!bonData[nama]) bonData[nama]=0;
-bonData[nama]+=totalHarga;
-}
-
-updateUI();
-updateChart();
-}
-
-function proses(){
 fetch(URL,{
-method:"POST",
-mode:"no-cors",
-body:JSON.stringify({total,cash,bon})
-});
-alert("Transaksi tersimpan!");
-}
-
-function tambahMember(){
-let nama=document.getElementById("namaMember").value;
-member.push(nama);
-alert("Member ditambah!");
-}
-
-function openModal(id){document.getElementById(id).style.display="block";}
-function closeModal(id){document.getElementById(id).style.display="none";}
-
-function updateUI(){
-document.getElementById("total").innerText=total;
-document.getElementById("cash").innerText=cash;
-document.getElementById("bon").innerText=bon;
-renderBon();
-renderRekap();
-}
-
-function renderBon(){
-let html="";
-for(let nama in bonData){
-html+=`${nama} : Rp ${bonData[nama]}<br>`;
-}
-document.getElementById("listBon").innerHTML=html;
-}
-
-function renderRekap(){
-document.getElementById("rekapData").innerHTML=
-`Total: ${total}<br>Cash: ${cash}<br>Bon: ${bon}`;
-}
-
-function printStruk(){
-window.print();
-}
-
-/* CHART */
-let chart=new Chart(document.getElementById("chart"),{
-type:'bar',
-data:{labels:["Cash","Bon"],datasets:[{data:[cash,bon]}]}
+  method:"POST",
+  mode:"no-cors",
+  body:JSON.stringify(data)
 });
 
-function updateChart(){
-chart.data.datasets[0].data=[cash,bon];
-chart.update();
+alert("✅ Data masuk ke Spreadsheet!");
 }
 
 </script>
