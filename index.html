@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Kasir Beras</title>
+  <title>Kasir Beras Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       font-family: Arial;
@@ -11,23 +12,38 @@
     .box {
       background: white;
       padding: 20px;
-      border-radius: 10px;
+      border-radius: 12px;
       max-width: 500px;
       margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
     }
     input, select, button {
       width: 100%;
       padding: 10px;
-      margin: 5px 0;
+      margin: 6px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
     button {
       background: #28a745;
       color: white;
       border: none;
+      font-weight: bold;
       cursor: pointer;
     }
-    h3 {
+    button:hover {
+      background: #218838;
+    }
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      background: #eee;
+      border-radius: 8px;
       text-align: center;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -50,8 +66,11 @@
   <label>Jumlah Karung</label>
   <input type="number" id="karung" value="1">
 
-  <label>Harga per Karung</label>
-  <input type="number" id="harga" placeholder="Masukkan harga">
+  <label>Harga Beli / Karung</label>
+  <input type="number" id="beli" placeholder="Contoh: 50000">
+
+  <label>Harga Jual / Karung</label>
+  <input type="number" id="jual" placeholder="Contoh: 60000">
 
   <label>Status</label>
   <select id="status">
@@ -59,68 +78,69 @@
     <option>Bon</option>
   </select>
 
-  <h3 id="total">Total: Rp 0</h3>
+  <div class="result" id="hasil">
+    Total: Rp 0 | Untung: Rp 0
+  </div>
 
   <button onclick="hitung()">Hitung</button>
   <button onclick="kirim()">Simpan ke Spreadsheet</button>
 </div>
 
 <script>
+
 function hitung() {
   let kg = parseInt(document.getElementById("jenis").value);
   let karung = parseInt(document.getElementById("karung").value);
-  let harga = parseInt(document.getElementById("harga").value);
+  let beli = parseInt(document.getElementById("beli").value);
+  let jual = parseInt(document.getElementById("jual").value);
 
-  if (!harga || !karung) {
-    alert("Isi harga dan jumlah karung dulu!");
+  if (!karung || !jual || !beli) {
+    alert("Isi semua data dulu!");
     return;
   }
 
   let totalKg = kg * karung;
-  let totalHarga = harga * karung;
+  let totalJual = jual * karung;
+  let untung = (jual - beli) * karung;
 
-  document.getElementById("total").innerText =
-    "Total: Rp " + totalHarga + " (" + totalKg + " Kg)";
+  document.getElementById("hasil").innerText =
+    "Total: Rp " + totalJual +
+    " | Untung: Rp " + untung +
+    " (" + totalKg + " Kg)";
 }
+
 
 function kirim() {
   let data = {
     nama: document.getElementById("nama").value,
     jenis: document.getElementById("jenis").value,
     karung: document.getElementById("karung").value,
-    harga: document.getElementById("harga").value,
+    beli: document.getElementById("beli").value,
+    jual: document.getElementById("jual").value,
     status: document.getElementById("status").value
   };
 
-  // Validasi sederhana
-  if (!data.nama || !data.harga) {
-    alert("Nama dan harga wajib diisi!");
+  if (!data.nama || !data.beli || !data.jual) {
+    alert("Data belum lengkap!");
     return;
   }
 
-  fetch("https://script.google.com/macros/s/AKfycbxQjR4vvLDC0zHd2KhW_xmEgvcjzV0HRLxEK8q9KRSC1yKXqg7DHoMb-7wbN8SFcnd2/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbyc8k47luq0tY-gHq3PXwVLByDQ6MvtfNa1itMcC45UxCAtq4dmrLZ2hlWMeti5B-hf/exec", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    mode: "no-cors", // WAJIB agar tidak error di Vercel
     body: JSON.stringify(data)
-  })
-  .then(res => res.json())
-  .then(res => {
-    console.log(res);
-    alert("✅ Data berhasil masuk ke Spreadsheet!");
-
-    // reset form
-    document.getElementById("nama").value = "";
-    document.getElementById("karung").value = 1;
-    document.getElementById("harga").value = "";
-    document.getElementById("total").innerText = "Total: Rp 0";
-  })
-  .catch(err => {
-    console.error(err);
-    alert("❌ Gagal kirim data!");
   });
+
+  alert("✅ Data berhasil dikirim!");
+
+  // reset form
+  document.getElementById("nama").value = "";
+  document.getElementById("karung").value = 1;
+  document.getElementById("beli").value = "";
+  document.getElementById("jual").value = "";
+  document.getElementById("hasil").innerText = "Total: Rp 0 | Untung: Rp 0";
 }
+
 </script>
 
 </body>
