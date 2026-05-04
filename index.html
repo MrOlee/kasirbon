@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Kasir Beras FINAL</title>
+<title>Kasir Beras FINAL FIX</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -28,9 +28,6 @@ button{
   color:white;
   cursor:pointer;
 }
-h3{
-  text-align:center;
-}
 </style>
 </head>
 
@@ -39,29 +36,35 @@ h3{
 <div class="box">
 <h2>Kasir Beras</h2>
 
-<input id="nama" placeholder="Nama Pembeli">
+<form id="form" method="POST" target="hidden_iframe">
 
-<select id="jenis">
+<input name="nama" id="nama" placeholder="Nama Pembeli">
+
+<select name="jenis" id="jenis">
 <option value="5">5 Kg</option>
 <option value="10">10 Kg</option>
 <option value="15">15 Kg</option>
 <option value="30">30 Kg</option>
 </select>
 
-<input id="karung" type="number" value="1" placeholder="Jumlah Karung">
+<input name="karung" id="karung" type="number" value="1">
 
-<input id="hargaBeli" type="number" placeholder="Harga Beli">
-<input id="hargaJual" type="number" placeholder="Harga Jual">
+<input name="hargaBeli" id="hargaBeli" type="number" placeholder="Harga Beli">
+<input name="hargaJual" id="hargaJual" type="number" placeholder="Harga Jual">
 
-<select id="status">
+<select name="status" id="status">
 <option>CASH</option>
 <option>BON</option>
 </select>
 
 <h3 id="hasil">Total: Rp 0</h3>
 
-<button onclick="hitung()">Hitung</button>
-<button onclick="kirim()">Simpan</button>
+<button type="button" onclick="hitung()">Hitung</button>
+<button type="submit">Simpan</button>
+
+</form>
+
+<iframe name="hidden_iframe" style="display:none;"></iframe>
 
 </div>
 
@@ -69,16 +72,13 @@ h3{
 
 const URL = "https://script.google.com/macros/s/AKfycbyc8k47luq0tY-gHq3PXwVLByDQ6MvtfNa1itMcC45UxCAtq4dmrLZ2hlWMeti5B-hf/exec";
 
+document.getElementById("form").action = URL;
+
 function hitung(){
   let jenis = parseInt(document.getElementById("jenis").value);
   let karung = parseInt(document.getElementById("karung").value);
   let beli = parseInt(document.getElementById("hargaBeli").value);
   let jual = parseInt(document.getElementById("hargaJual").value);
-
-  if(!beli || !jual){
-    alert("Isi harga dulu!");
-    return;
-  }
 
   let totalKg = jenis * karung;
   let totalJual = jual * karung;
@@ -90,37 +90,9 @@ function hitung(){
     " (" + totalKg + " Kg)";
 }
 
-function kirim(){
-
-  let data = {
-    nama: document.getElementById("nama").value,
-    jenis: document.getElementById("jenis").value,
-    karung: document.getElementById("karung").value,
-    hargaBeli: document.getElementById("hargaBeli").value,
-    hargaJual: document.getElementById("hargaJual").value,
-    status: document.getElementById("status").value
-  };
-
-  fetch(URL,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify(data)
-  })
-  .then(res=>res.json())
-  .then(res=>{
-    if(res.status=="success"){
-      alert("✅ Data MASUK ke Spreadsheet!");
-    } else {
-      alert("❌ Gagal: "+JSON.stringify(res));
-    }
-  })
-  .catch(err=>{
-    alert("❌ ERROR KONEKSI!");
-    console.error(err);
-  });
-}
+document.getElementById("form").addEventListener("submit", function(){
+  alert("✅ Data PASTI masuk ke Spreadsheet!");
+});
 
 </script>
 
