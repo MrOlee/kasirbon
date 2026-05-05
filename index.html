@@ -58,53 +58,34 @@
 </div>
 
 <script>
-    // GANTI URL DI BAWAH INI DENGAN URL WEB APP ANDA
-    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbywFK_NDVykbQwVP0AjCUuqh3Pf4DzIrinB6eUkR5rCMBbzbdVsp5NyyurrDS_ASQlm/exec";
+const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbxb_dQqdPnaXrWbjtAMykTgONhpEl2HgxvkH0JH8E-txCbtwyT5avRTg2nx01gVAtQ1/exec";
 
-    function hitung() {
-        let jenis = parseInt(document.getElementById("jenis").value) || 0;
-        let karung = parseInt(document.getElementById("karung").value) || 0;
-        let beli = parseInt(document.getElementById("hargaBeli").value) || 0;
-        let jual = parseInt(document.getElementById("hargaJual").value) || 0;
+document.getElementById("kasirForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById("btnSimpan");
+    btn.disabled = true;
+    btn.innerText = "Proses...";
 
-        let totalKg = jenis * karung;
-        let totalJual = jual * karung;
-        let untung = (jual - beli) * karung;
-
-        document.getElementById("hasil").innerHTML = `
-            <h3>Total: Rp ${totalJual.toLocaleString()}</h3>
-            <p>Untung: Rp ${untung.toLocaleString()} (${totalKg} Kg)</p>
-        `;
-    }
-
-    document.getElementById("kasirForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-        
-        const btn = document.getElementById("btnSimpan");
-        btn.disabled = true;
-        btn.innerText = "Sedang Menyimpan...";
-
-        // Mengirim data menggunakan URLSearchParams agar mudah dibaca oleh e.parameter Apps Script
-        const formData = new URLSearchParams(new FormData(this));
-
-        fetch(URL_APP_SCRIPT, {
-            method: "POST",
-            body: formData,
-            mode: "no-cors" // Mengatasi masalah CORS di Google Apps Script
-        })
-        .then(() => {
-            alert("✅ Data Berhasil Terkirim!");
-            this.reset();
-            document.getElementById("hasil").innerHTML = "<h3>Total: Rp 0</h3><p>Untung: Rp 0 (0 Kg)</p>";
-        })
-        .catch(error => {
-            alert("❌ Terjadi Kesalahan: " + error);
-        })
-        .finally(() => {
-            btn.disabled = false;
-            btn.innerText = "Simpan ke Spreadsheet";
-        });
+    // Menggunakan fetch dengan mode no-cors
+    fetch(URL_APP_SCRIPT, {
+        method: "POST",
+        body: new URLSearchParams(new FormData(this)),
+        mode: "no-cors"
+    })
+    .then(() => {
+        alert("Selesai! Silahkan cek Spreadsheet.");
+        this.reset();
+        document.getElementById("hasil").innerHTML = "<h3>Total: Rp 0</h3>";
+    })
+    .catch(error => {
+        alert("Error: " + error);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerText = "Simpan ke Spreadsheet";
     });
+});
 </script>
 
 </body>
