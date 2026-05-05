@@ -1,99 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<title>Kasir Beras FINAL FIX</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-body{
-  font-family:Arial;
-  background:#b04a56;
-  color:white;
-  padding:20px;
-}
-.box{
-  background:#a94450;
-  padding:20px;
-  border-radius:10px;
-  max-width:500px;
-  margin:auto;
-}
-input,select,button{
-  width:100%;
-  padding:10px;
-  margin:5px 0;
-}
-button{
-  background:#222;
-  color:white;
-  cursor:pointer;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Kasir Beras FINAL FIX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; background: #b04a56; color: white; padding: 20px; }
+        .box { background: #a94450; padding: 20px; border-radius: 10px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        h2 { text-align: center; margin-bottom: 20px; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; border: none; box-sizing: border-box; }
+        input, select { background: #eee; color: #333; }
+        button { background: #222; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #444; }
+        button:disabled { background: #888; cursor: not-allowed; }
+        #hasil { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; text-align: center; }
+    </style>
 </head>
-
 <body>
 
 <div class="box">
-<h2>Kasir Beras</h2>
+    <h2>Kasir Beras</h2>
+    <form id="kasirForm">
+        <label>Nama Client:</label>
+        <input name="nama" id="nama" placeholder="Masukkan Nama" required>
 
-<form id="form" method="POST" target="hidden_iframe">
+        <label>Jenis Ukuran:</label>
+        <select name="jenis" id="jenis">
+            <option value="5">5 Kg</option>
+            <option value="10">10 Kg</option>
+            <option value="15">15 Kg</option>
+            <option value="30">30 Kg</option>
+        </select>
 
-<input name="nama" id="nama" placeholder="Nama Pembeli">
+        <label>Jumlah Karung:</label>
+        <input name="karung" id="karung" type="number" value="1" min="1" required>
 
-<select name="jenis" id="jenis">
-<option value="5">5 Kg</option>
-<option value="10">10 Kg</option>
-<option value="15">15 Kg</option>
-<option value="30">30 Kg</option>
-</select>
+        <label>Harga Beli (per karung):</label>
+        <input name="beli" id="hargaBeli" type="number" placeholder="Contoh: 57000" required>
 
-<input name="karung" id="karung" type="number" value="1">
+        <label>Harga Jual (per karung):</label>
+        <input name="jual" id="hargaJual" type="number" placeholder="Contoh: 62000" required>
 
-<input name="hargaBeli" id="hargaBeli" type="number" placeholder="Harga Beli">
-<input name="hargaJual" id="hargaJual" type="number" placeholder="Harga Jual">
+        <label>Status Pembayaran:</label>
+        <select name="status" id="status">
+            <option value="CASH">CASH</option>
+            <option value="BON">BON</option>
+        </select>
 
-<select name="status" id="status">
-<option>CASH</option>
-<option>BON</option>
-</select>
+        <div id="hasil">
+            <h3>Total: Rp 0</h3>
+            <p>Untung: Rp 0 (0 Kg)</p>
+        </div>
 
-<h3 id="hasil">Total: Rp 0</h3>
-
-<button type="button" onclick="hitung()">Hitung</button>
-<button type="submit">Simpan</button>
-
-</form>
-
-<iframe name="hidden_iframe" style="display:none;"></iframe>
-
+        <button type="button" onclick="hitung()">Cek Hitungan</button>
+        <button type="submit" id="btnSimpan">Simpan ke Spreadsheet</button>
+    </form>
 </div>
 
 <script>
+    // GANTI URL DI BAWAH INI DENGAN URL WEB APP ANDA
+    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbywFK_NDVykbQwVP0AjCUuqh3Pf4DzIrinB6eUkR5rCMBbzbdVsp5NyyurrDS_ASQlm/exec";
 
-const URL = "https://script.google.com/macros/s/AKfycbyc8k47luq0tY-gHq3PXwVLByDQ6MvtfNa1itMcC45UxCAtq4dmrLZ2hlWMeti5B-hf/exec";
+    function hitung() {
+        let jenis = parseInt(document.getElementById("jenis").value) || 0;
+        let karung = parseInt(document.getElementById("karung").value) || 0;
+        let beli = parseInt(document.getElementById("hargaBeli").value) || 0;
+        let jual = parseInt(document.getElementById("hargaJual").value) || 0;
 
-document.getElementById("form").action = URL;
+        let totalKg = jenis * karung;
+        let totalJual = jual * karung;
+        let untung = (jual - beli) * karung;
 
-function hitung(){
-  let jenis = parseInt(document.getElementById("jenis").value);
-  let karung = parseInt(document.getElementById("karung").value);
-  let beli = parseInt(document.getElementById("hargaBeli").value);
-  let jual = parseInt(document.getElementById("hargaJual").value);
+        document.getElementById("hasil").innerHTML = `
+            <h3>Total: Rp ${totalJual.toLocaleString()}</h3>
+            <p>Untung: Rp ${untung.toLocaleString()} (${totalKg} Kg)</p>
+        `;
+    }
 
-  let totalKg = jenis * karung;
-  let totalJual = jual * karung;
-  let untung = (jual - beli) * karung;
+    document.getElementById("kasirForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById("btnSimpan");
+        btn.disabled = true;
+        btn.innerText = "Sedang Menyimpan...";
 
-  document.getElementById("hasil").innerText =
-    "Total: Rp " + totalJual +
-    " | Untung: Rp " + untung +
-    " (" + totalKg + " Kg)";
-}
+        // Mengirim data menggunakan URLSearchParams agar mudah dibaca oleh e.parameter Apps Script
+        const formData = new URLSearchParams(new FormData(this));
 
-document.getElementById("form").addEventListener("submit", function(){
-  alert("✅ Data PASTI masuk ke Spreadsheet!");
-});
-
+        fetch(URL_APP_SCRIPT, {
+            method: "POST",
+            body: formData,
+            mode: "no-cors" // Mengatasi masalah CORS di Google Apps Script
+        })
+        .then(() => {
+            alert("✅ Data Berhasil Terkirim!");
+            this.reset();
+            document.getElementById("hasil").innerHTML = "<h3>Total: Rp 0</h3><p>Untung: Rp 0 (0 Kg)</p>";
+        })
+        .catch(error => {
+            alert("❌ Terjadi Kesalahan: " + error);
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerText = "Simpan ke Spreadsheet";
+        });
+    });
 </script>
 
 </body>
