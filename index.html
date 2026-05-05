@@ -2,18 +2,57 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Kasir Beras </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kasir Beras FINAL FIX</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #b04a56; color: white; padding: 20px; }
-        .box { background: #a94450; padding: 20px; border-radius: 10px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        h2 { text-align: center; margin-bottom: 20px; }
-        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; border: none; box-sizing: border-box; }
-        input, select { background: #eee; color: #333; }
-        button { background: #222; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #444; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #b04a56; 
+            color: white; 
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+        }
+        .box { 
+            background: #a94450; 
+            padding: 25px; 
+            border-radius: 12px; 
+            width: 100%;
+            max-width: 450px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
+        }
+        h2 { text-align: center; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        label { display: block; margin-top: 10px; font-size: 0.9em; opacity: 0.9; }
+        input, select, button { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0; 
+            border-radius: 6px; 
+            border: none; 
+            box-sizing: border-box; 
+            font-size: 16px;
+        }
+        input, select { background: #fdfdfd; color: #333; }
+        button { 
+            background: #222; 
+            color: white; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            margin-top: 15px;
+        }
+        button:hover { background: #000; transform: translateY(-1px); }
         button:disabled { background: #888; cursor: not-allowed; }
-        #hasil { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; text-align: center; }
+        #hasil { 
+            background: rgba(0,0,0,0.15); 
+            padding: 15px; 
+            border-radius: 8px; 
+            text-align: center; 
+            margin-top: 15px;
+            border: 1px dashed rgba(255,255,255,0.3);
+        }
+        .total-text { font-size: 1.4em; font-weight: bold; margin: 0; color: #fff; }
+        .sub-text { font-size: 0.9em; margin: 5px 0 0 0; opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -22,9 +61,9 @@
     <h2>Kasir Beras</h2>
     <form id="kasirForm">
         <label>Nama Client:</label>
-        <input name="nama" id="nama" placeholder="Masukkan Nama" required>
+        <input name="nama" id="nama" placeholder="Nama Pembeli" required>
 
-        <label>Jenis Ukuran:</label>
+        <label>Ukuran Karung:</label>
         <select name="jenis" id="jenis">
             <option value="5">5 Kg</option>
             <option value="10">10 Kg</option>
@@ -41,51 +80,71 @@
         <label>Harga Jual (per karung):</label>
         <input name="jual" id="hargaJual" type="number" placeholder="Contoh: 62000" required>
 
-        <label>Status Pembayaran:</label>
+        <label>Status:</label>
         <select name="status" id="status">
             <option value="CASH">CASH</option>
             <option value="BON">BON</option>
         </select>
 
         <div id="hasil">
-            <h3>Total: Rp 0</h3>
-            <p>Untung: Rp 0 (0 Kg)</p>
+            <p class="total-text" id="dispTotal">Total: Rp 0</p>
+            <p class="sub-text" id="dispDetail">Untung: Rp 0 (0 Kg)</p>
         </div>
 
-        <button type="button" onclick="hitung()">Cek Hitungan</button>
-        <button type="submit" id="btnSimpan">Simpan ke Spreadsheet</button>
+        <button type="button" onclick="hitung()">CEK HITUNGAN</button>
+        <button type="submit" id="btnSimpan">SIMPAN KE SPREADSHEET</button>
     </form>
 </div>
 
 <script>
-const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbxb_dQqdPnaXrWbjtAMykTgONhpEl2HgxvkH0JH8E-txCbtwyT5avRTg2nx01gVAtQ1/exec";
+    // 1. WAJIB GANTI DENGAN URL WEB APP HASIL DEPLOY TERBARU
+    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbz5Z7y0s_KINBJm5PSCa_-oioX35ntNd3wcaroZuhLHFf4N6Z_J0GM3q8xfw-Hi7q71/exec";
 
-document.getElementById("kasirForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    
-    const btn = document.getElementById("btnSimpan");
-    btn.disabled = true;
-    btn.innerText = "Proses...";
+    function hitung() {
+        const jenis = parseInt(document.getElementById("jenis").value) || 0;
+        const karung = parseInt(document.getElementById("karung").value) || 0;
+        const beli = parseInt(document.getElementById("hargaBeli").value) || 0;
+        const jual = parseInt(document.getElementById("hargaJual").value) || 0;
 
-    // Menggunakan fetch dengan mode no-cors
-    fetch(URL_APP_SCRIPT, {
-        method: "POST",
-        body: new URLSearchParams(new FormData(this)),
-        mode: "no-cors"
-    })
-    .then(() => {
-        alert("Selesai! Silahkan cek Spreadsheet.");
-        this.reset();
-        document.getElementById("hasil").innerHTML = "<h3>Total: Rp 0</h3>";
-    })
-    .catch(error => {
-        alert("Error: " + error);
-    })
-    .finally(() => {
-        btn.disabled = false;
-        btn.innerText = "Simpan ke Spreadsheet";
+        const totalKg = jenis * karung;
+        const totalJual = jual * karung;
+        const untung = (jual - beli) * karung;
+
+        document.getElementById("dispTotal").innerText = "Total: Rp " + totalJual.toLocaleString('id-ID');
+        document.getElementById("dispDetail").innerText = "Untung: Rp " + untung.toLocaleString('id-ID') + " (" + totalKg + " Kg)";
+    }
+
+    document.getElementById("kasirForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById("btnSimpan");
+        const originalText = btn.innerText;
+        
+        btn.disabled = true;
+        btn.innerText = "SEDANG MENYIMPAN...";
+
+        // Mengirim data menggunakan URLSearchParams agar sinkron dengan e.parameter di Apps Script
+        const data = new URLSearchParams(new FormData(this));
+
+        fetch(URL_APP_SCRIPT, {
+            method: "POST",
+            body: data,
+            mode: "no-cors"
+        })
+        .then(() => {
+            alert("✅ DATA BERHASIL MASUK!");
+            this.reset();
+            document.getElementById("dispTotal").innerText = "Total: Rp 0";
+            document.getElementById("dispDetail").innerText = "Untung: Rp 0 (0 Kg)";
+        })
+        .catch(err => {
+            alert("❌ GAGAL: " + err);
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        });
     });
-});
 </script>
 
 </body>
